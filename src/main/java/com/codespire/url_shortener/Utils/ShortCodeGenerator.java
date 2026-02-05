@@ -12,7 +12,7 @@ public class ShortCodeGenerator {
 
     private static final Random RANDOM = new Random();
 
-    public  String generate() {
+    public String generate() {
         StringBuilder sb = new StringBuilder(CODE_LENGTH);
         for (int i = 0; i < CODE_LENGTH; i++) {
             sb.append(CHAR_SET.charAt(RANDOM.nextInt(CHAR_SET.length())));

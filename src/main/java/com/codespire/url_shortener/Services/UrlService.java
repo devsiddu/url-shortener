@@ -19,13 +19,13 @@ public class UrlService {
         this.shortCodeGenerator = shortCodeGenerator;
     }
 
-    public ShortUrl createOrGetShortUrl(ShortUrl request) {
+    public ShortUrl createOrGetShortUrl(String originalUrl) {
 
         return repository
-                .findByOriginalUrl(request.getOriginalUrl())
+                .findByOriginalUrl(originalUrl)
                 .orElseGet(() -> {
                     ShortUrl shortUrl = new ShortUrl();
-                    shortUrl.setOriginalUrl(request.getOriginalUrl());
+                    shortUrl.setOriginalUrl(originalUrl);
 
                     String code;
                     do {
