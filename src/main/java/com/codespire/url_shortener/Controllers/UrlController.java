@@ -15,6 +15,8 @@ import com.codespire.url_shortener.Dto.UrlResponse;
 import com.codespire.url_shortener.Models.ShortUrl;
 import com.codespire.url_shortener.Services.UrlService;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class UrlController {
 
@@ -25,12 +27,9 @@ public class UrlController {
     }
 
     @PostMapping("/generate")
-    public ResponseEntity<UrlResponse> generate(@RequestBody UrlRequest request) {
+    public ResponseEntity<UrlResponse> generate(@Valid @RequestBody UrlRequest request) {
         String originalUrl = request.getOriginalUrl();
 
-        if(!originalUrl.startsWith("http://") && !originalUrl.startsWith("https://")){
-            originalUrl = "https://" + originalUrl;
-        }
         ShortUrl shortUrl = urlService.createOrGetShortUrl(originalUrl);
         String fullResponse = "http://localhost:8080/" + shortUrl.getShortCode();
         return ResponseEntity.ok(new UrlResponse(fullResponse));
@@ -41,11 +40,10 @@ public class UrlController {
     public ResponseEntity<Void> redirect(@PathVariable("shortCode") String shortCode) {
 
         ShortUrl shortUrl = urlService.getByShortCode(shortCode);
-        if (shortCode == null) {
+        if (shortUrl == null) {
             return ResponseEntity.notFound().build();
         }
 
-        
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrl.getOriginalUrl())).build();
     }
 }
