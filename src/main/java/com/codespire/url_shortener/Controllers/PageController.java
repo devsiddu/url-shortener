@@ -11,7 +11,9 @@ public class PageController {
     
     @GetMapping("/")
     public String home(Model model){
-        model.addAttribute("urlUiRequest", new UrlUiRequest());
+        if(!model.containsAttribute("urlUiRequest")){
+            model.addAttribute("urlUiRequest", new UrlUiRequest());
+        }
         return "index";
     }
 }
