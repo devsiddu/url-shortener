@@ -1,18 +1,24 @@
-# 1) Build stage  - compile and build jar
-FROM gradle:jdk17 AS build
+# ===== Build Stage =====
+FROM eclipse-temurin:17-jdk AS build
 
-WORKDIR /home/gradle/src
-COPY --chown=gradle:gradle . .
+WORKDIR /app
 
-RUN gradle clean bootJar --no-daemon
+# Copy everything
+COPY . .
 
-# 2) Run Stage - run jar 
+# Give execute permission to gradlew
+RUN chmod +x gradlew
 
+# Build jar
+RUN ./gradlew clean bootJar --no-daemon
+
+# ===== Run Stage =====
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
-COPY --from=build /home/gradle/src/build/libs/*.jar app.jar
+
+COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT [ "java", "-jar", "app.jar" ]
+ENTRYPOINT ["java", "-jar", "app.jar"]
