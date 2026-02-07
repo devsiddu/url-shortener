@@ -2,6 +2,7 @@ package com.codespire.url_shortener.Controllers;
 
 import java.net.URI;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +25,8 @@ import jakarta.validation.constraints.Pattern;
 @Validated
 public class UrlController {
 
+    @Value("${app.base-url}")
+    private String BASE_URL;
     private UrlService urlService;
 
     public UrlController(UrlService urlService) {
@@ -35,13 +38,13 @@ public class UrlController {
         String originalUrl = request.getOriginalUrl();
 
         ShortUrl shortUrl = urlService.createOrGetShortUrl(originalUrl);
-        String fullResponse = "http://localhost:8080/" + shortUrl.getShortCode();
+        String fullResponse = BASE_URL + "/" + shortUrl.getShortCode();
         return ResponseEntity.ok(new UrlResponse(fullResponse));
 
     }
 
-    @GetMapping("/{shortCode}")
-    public ResponseEntity<Void> redirect(@NotBlank(message = "Short code must not be empty") @Pattern(regexp = "^[a-zA-Z0-9]{6}$", message = "Invalid short code format") @PathVariable("shortCode") String shortCode) {
+    @GetMapping("/{shortCode:[a-zA-Z0-9]{6}}")
+    public ResponseEntity<Void> redirect(@PathVariable("shortCode") String shortCode) {
 
         ShortUrl shortUrl = urlService.getByShortCode(shortCode);
         if (shortUrl == null) {
